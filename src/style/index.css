@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply min-h-screen font-sans text-slate-800;
+    background: linear-gradient(
+      165deg,
+      #f1f5f9 0%,
+      #e2e8f0 45%,
+      #f8fafc 100%
+    );
+  }
+}
