@@ -63,7 +63,7 @@ function App() {
         );
         const newDataset: Dataset = {
           id: 1,
-          label: "Investissement gelé",
+          label: "Lump sum (no new contributions)",
           data: res,
         };
         setDatasets((prev) => [...prev, newDataset]);
@@ -83,7 +83,7 @@ function App() {
         );
         const newDataset: Dataset = {
           id: 2,
-          label: "Investissement fixe",
+          label: "Fixed annual contributions",
           data: res,
         };
         setDatasets((prev) => [...prev, newDataset]);
@@ -104,7 +104,7 @@ function App() {
         );
         const newDataset: Dataset = {
           id: 3,
-          label: "Investissement croissant",
+          label: "Growing contributions (salary raises)",
           data: res,
         };
         setDatasets((prev) => [...prev, newDataset]);

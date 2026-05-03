@@ -37,7 +37,7 @@ export function ParametersBox({
   return (
     <div className="flex flex-col p-6 border-2 border-gray-300 rounded-lg shadow-lg space-y-2 bg-white">
       <label className="flex justify-between items-center space-x-5">
-        <span className="font-semibold">Horizon (années)</span>
+        <span className="font-semibold">Time horizon (years)</span>
         <input
           type="number"
           min="0"

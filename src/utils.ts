@@ -5,13 +5,13 @@ export function getTaxOnGain(gain: number, taxRate: number): number {
   return gain * taxRate;
 }
 
-// Adjust a futur value for inflation
+// Adjust a future value for inflation (real terms at horizon).
 export function adjustForInflation(
-  futurValue: number,
+  futureValue: number,
   inflationRate: number,
   nbYears: number
 ): number {
-  return futurValue / Math.pow(1 + inflationRate, nbYears);
+  return futureValue / Math.pow(1 + inflationRate, nbYears);
 }
 
 // Compute the future value of an investment with a unique initial deposit.
@@ -24,7 +24,7 @@ export function futureValue(
 }
 
 // Compute the future values of an investment with a unique initial deposit.
-export function futurValues(
+export function futureValues(
   capital: number,
   roi: number,
   nbYears: number
@@ -44,13 +44,13 @@ export function investUniqueDeposit(
   taxRate: number,
   inflationRate: number
 ) {
-  const values_before_taxes = futurValues(capital, roi, nbYears);
+  const values_before_taxes = futureValues(capital, roi, nbYears);
   const gains = values_before_taxes.map((v) => v.value - capital);
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
-  const values_after_taxes = values_before_taxes.map((projection, indice) => {
+  const values_after_taxes = values_before_taxes.map((projection, idx) => {
     return {
       year: projection.year,
-      value: projection.value - taxes[indice],
+      value: projection.value - taxes[idx],
     };
   });
   const values_after_inflation = values_after_taxes.map((projection) => {
@@ -75,7 +75,7 @@ export function futureValueFixedCompounding(
   return initialSumFutureValue + depositsFutureValue;
 }
 
-// Compute the future values of an investment with a fixed monthly deposit.
+// Compute the future values of an investment with a fixed annual deposit.
 export function futureValuesFixedCompounding(
   capital: number,
   roi: number,
@@ -89,7 +89,7 @@ export function futureValuesFixedCompounding(
   }));
 }
 
-// Compute the future values of an investment with a fixed monthly deposit and considering taxes.
+// Compute the future values of an investment with a fixed annual deposit and taxes.
 export function investFixedDeposit(
   capital: number,
   roi: number,
@@ -107,13 +107,13 @@ export function investFixedDeposit(
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   const deposits = timeHorizons.map((year) => capital + year * annualDeposit);
   const gains = values_before_taxes.map(
-    (v, indice) => v.value - deposits[indice]
+    (v, idx) => v.value - deposits[idx]
   );
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
-  const values_after_taxes = values_before_taxes.map((projection, indice) => {
+  const values_after_taxes = values_before_taxes.map((projection, idx) => {
     return {
       year: projection.year,
-      value: projection.value - taxes[indice],
+      value: projection.value - taxes[idx],
     };
   });
   const values_after_inflation = values_after_taxes.map((projection) => {
@@ -125,7 +125,7 @@ export function investFixedDeposit(
   return values_after_inflation;
 }
 
-// Compute the future values of an investment with a growing monthly deposit.
+// Compute the future values of an investment with growing annual deposits.
 export function futureValuesGrowingCompounding(
   capital: number,
   roi: number,
@@ -144,7 +144,7 @@ export function futureValuesGrowingCompounding(
   }));
 }
 
-// Compute the future values of an investment with a growing monthly deposit and considering taxes.
+// Compute the future values of an investment with growing annual deposits and taxes.
 export function investGrowingDeposit(
   capital: number,
   roi: number,
@@ -169,17 +169,17 @@ export function investGrowingDeposit(
     annualDeposits
   );
   const deposits = [capital + annualDeposits[0]];
-  for (let indice = 1; indice <= nbYears; indice++) {
-    deposits.push(deposits[indice - 1] + annualDeposits[indice]);
+  for (let y = 1; y <= nbYears; y++) {
+    deposits.push(deposits[y - 1] + annualDeposits[y]);
   }
   const gains = values_before_taxes.map(
-    (v, indice) => v.value - deposits[indice]
+    (v, idx) => v.value - deposits[idx]
   );
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
-  const values_after_taxes = values_before_taxes.map((projection, indice) => {
+  const values_after_taxes = values_before_taxes.map((projection, idx) => {
     return {
       year: projection.year,
-      value: projection.value - taxes[indice],
+      value: projection.value - taxes[idx],
     };
   });
   const values_after_inflation = values_after_taxes.map((projection) => {

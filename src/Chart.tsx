@@ -32,9 +32,9 @@ interface PropsType {
 }
 
 export function Chart({ datasets, line, showGoal }: Readonly<PropsType>) {
-  const nbDatasets = datasets.length;
+  const datasetCount = datasets.length;
 
-  if (nbDatasets === 0) {
+  if (datasetCount === 0) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         No scenario selected
@@ -83,7 +83,7 @@ export function Chart({ datasets, line, showGoal }: Readonly<PropsType>) {
   const chartData = {
     labels: datasets[0].data.map((item) => item.year),
     datasets: datasets.map((dataset, index) => {
-      const { borderColor, backgroundColor } = generateColor(index, nbDatasets);
+      const { borderColor, backgroundColor } = generateColor(index, datasetCount);
       return {
         label: dataset.label,
         data: dataset.data.map((item) => item.value),

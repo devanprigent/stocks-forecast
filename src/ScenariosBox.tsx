@@ -24,7 +24,7 @@ export function ScenariosBox({ callback }: Readonly<PropsType>) {
 
   return (
     <div className="flex flex-col p-4 border-2 border-gray-300 rounded-lg shadow-lg bg-white">
-      <div className="text-center text-3xl">Scénarios</div>
+      <div className="text-center text-3xl">Scenarios</div>
       <br />
       <label className="mb-2">
         <span className="flex items-center">
@@ -35,10 +35,10 @@ export function ScenariosBox({ callback }: Readonly<PropsType>) {
             onChange={handleCheckboxChange}
             className="mr-2"
           />
-          Investissement gelé
+          Lump sum (no new contributions)
           <InfoIcon
             tooltip={
-              "Si j'arrête d'investir mais que je garde mes investissements actuels, combien vont-ils me rapporter en 10, 15, 20 ans ?"
+              "If I stop adding money but keep my current portfolio, how much will it be worth in 10, 15, or 20 years?"
             }
           />
         </span>
@@ -52,10 +52,10 @@ export function ScenariosBox({ callback }: Readonly<PropsType>) {
             onChange={handleCheckboxChange}
             className="mr-2"
           />
-          Investissement fixe
+          Fixed annual contributions
           <InfoIcon
             tooltip={
-              "Si je continue à investir autant pendant les 10, 15, 20 ans, combien vont-ils me rapporter ?"
+              "If I keep investing the same amount every year for 10, 15, or 20 years, how much will I have?"
             }
           />
         </span>
@@ -69,10 +69,10 @@ export function ScenariosBox({ callback }: Readonly<PropsType>) {
             onChange={handleCheckboxChange}
             className="mr-2"
           />
-          Investissement croissant
+          Growing contributions (salary raises)
           <InfoIcon
             tooltip={
-              "Si je continue à investir mais que je prends en compte mes augmentations de salaires futurs, combien vont-ils me rapporter ?"
+              "If I keep investing and factor in future salary increases, how much will I have?"
             }
           />
         </span>
