@@ -1,33 +1,29 @@
 import { Projection } from "./types";
 
 // Compute the tax on the gain of an investment:
-export function getTaxOnGain(gain: number, taxRate: number): number {
+function getTaxOnGain(gain: number, taxRate: number): number {
   return gain * taxRate;
 }
 
 // Adjust a future value for inflation (real terms at horizon).
-export function adjustForInflation(
+function adjustForInflation(
   futureValue: number,
   inflationRate: number,
-  nbYears: number
+  nbYears: number,
 ): number {
   return futureValue / Math.pow(1 + inflationRate, nbYears);
 }
 
 // Compute the future value of an investment with a unique initial deposit.
-export function futureValue(
-  capital: number,
-  roi: number,
-  nbYears: number
-): number {
+function futureValue(capital: number, roi: number, nbYears: number): number {
   return capital * Math.pow(1 + roi, nbYears);
 }
 
 // Compute the future values of an investment with a unique initial deposit.
-export function futureValues(
+function futureValues(
   capital: number,
   roi: number,
-  nbYears: number
+  nbYears: number,
 ): Projection[] {
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   return timeHorizons.map((year) => ({
@@ -42,7 +38,7 @@ export function investUniqueDeposit(
   roi: number,
   nbYears: number,
   taxRate: number,
-  inflationRate: number
+  inflationRate: number,
 ) {
   const values_before_taxes = futureValues(capital, roi, nbYears);
   const gains = values_before_taxes.map((v) => v.value - capital);
@@ -63,11 +59,11 @@ export function investUniqueDeposit(
 }
 
 // Compute the future value of an investment with an annual deposit.
-export function futureValueFixedCompounding(
+function futureValueFixedCompounding(
   capital: number,
   roi: number,
   nbYears: number,
-  annualDeposit: number
+  annualDeposit: number,
 ): number {
   const initialSumFutureValue = capital * Math.pow(1 + roi, nbYears);
   const depositsFutureValue =
@@ -76,11 +72,11 @@ export function futureValueFixedCompounding(
 }
 
 // Compute the future values of an investment with a fixed annual deposit.
-export function futureValuesFixedCompounding(
+function futureValuesFixedCompounding(
   capital: number,
   roi: number,
   nbYears: number,
-  annualDeposit: number
+  annualDeposit: number,
 ): Projection[] {
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   return timeHorizons.map((year) => ({
@@ -96,19 +92,17 @@ export function investFixedDeposit(
   nbYears: number,
   taxRate: number,
   inflationRate: number,
-  annualDeposit: number
+  annualDeposit: number,
 ): Projection[] {
   const values_before_taxes = futureValuesFixedCompounding(
     capital,
     roi,
     nbYears,
-    annualDeposit
+    annualDeposit,
   );
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   const deposits = timeHorizons.map((year) => capital + year * annualDeposit);
-  const gains = values_before_taxes.map(
-    (v, idx) => v.value - deposits[idx]
-  );
+  const gains = values_before_taxes.map((v, idx) => v.value - deposits[idx]);
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
   const values_after_taxes = values_before_taxes.map((projection, idx) => {
     return {
@@ -126,11 +120,11 @@ export function investFixedDeposit(
 }
 
 // Compute the future values of an investment with growing annual deposits.
-export function futureValuesGrowingCompounding(
+function futureValuesGrowingCompounding(
   capital: number,
   roi: number,
   nbYears: number,
-  annualDeposits: number[]
+  annualDeposits: number[],
 ): Projection[] {
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   return timeHorizons.map((year) => ({
@@ -139,7 +133,7 @@ export function futureValuesGrowingCompounding(
       capital,
       roi,
       year,
-      annualDeposits[year]
+      annualDeposits[year],
     ),
   }));
 }
@@ -153,28 +147,26 @@ export function investGrowingDeposit(
   inflationRate: number,
   initialSalary: number,
   salaryIncreaseRate: number,
-  investingRate: number
+  investingRate: number,
 ) {
   const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
   const yearlySalaries = timeHorizons.map(
-    (year) => initialSalary * 12 * Math.pow(1 + salaryIncreaseRate, year)
+    (year) => initialSalary * 12 * Math.pow(1 + salaryIncreaseRate, year),
   );
   const annualDeposits = timeHorizons.map((year) =>
-    Math.floor(yearlySalaries[year] * investingRate)
+    Math.floor(yearlySalaries[year] * investingRate),
   );
   const values_before_taxes = futureValuesGrowingCompounding(
     capital,
     roi,
     nbYears,
-    annualDeposits
+    annualDeposits,
   );
   const deposits = [capital + annualDeposits[0]];
   for (let y = 1; y <= nbYears; y++) {
     deposits.push(deposits[y - 1] + annualDeposits[y]);
   }
-  const gains = values_before_taxes.map(
-    (v, idx) => v.value - deposits[idx]
-  );
+  const gains = values_before_taxes.map((v, idx) => v.value - deposits[idx]);
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
   const values_after_taxes = values_before_taxes.map((projection, idx) => {
     return {
@@ -189,8 +181,4 @@ export function investGrowingDeposit(
     };
   });
   return values_after_inflation;
-}
-
-export function goal(spendingPerMonth: number): number {
-  return 25 * 12 * spendingPerMonth;
 }

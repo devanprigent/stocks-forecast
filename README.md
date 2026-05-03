@@ -12,18 +12,6 @@ A small **React** web app that projects long-term portfolio value under several 
 - **Optional goal line**: “25× rule” target from estimated annual spending (portion of salary not invested), shown as a horizontal reference on the chart.
 - **Chart.js** line chart with multiple series and annotations.
 
-Tax on gains uses a fixed model in code (see `App.tsx` / `utils.ts`); treat all numbers as **illustrative**, not tax or financial advice.
-
-## Tech stack
-
-| Area        | Choice                          |
-| ----------- | ------------------------------- |
-| Runtime     | Node.js (for tooling)           |
-| Framework   | React 18                        |
-| Build       | Vite 6                          |
-| Language    | TypeScript                      |
-| UI          | MUI 6, Tailwind CSS 4, Emotion  |
-| Charts      | Chart.js, react-chartjs-2, chartjs-plugin-annotation |
 
 ## Getting started
 
