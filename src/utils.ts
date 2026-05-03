@@ -5,13 +5,13 @@ function getTaxOnGain(gain: number, taxRate: number): number {
   return gain * taxRate;
 }
 
-// Adjust a future value for inflation (real terms at horizon).
+// Express a nominal future value in today's money: discount by elapsed years.
 function adjustForInflation(
   futureValue: number,
   inflationRate: number,
-  nbYears: number,
+  elapsedYears: number,
 ): number {
-  return futureValue / Math.pow(1 + inflationRate, nbYears);
+  return futureValue / Math.pow(1 + inflationRate, elapsedYears);
 }
 
 // Compute the future value of an investment with a unique initial deposit.
@@ -52,7 +52,11 @@ export function investUniqueDeposit(
   const values_after_inflation = values_after_taxes.map((projection) => {
     return {
       year: projection.year,
-      value: adjustForInflation(projection.value, inflationRate, nbYears),
+      value: adjustForInflation(
+        projection.value,
+        inflationRate,
+        projection.year,
+      ),
     };
   });
   return values_after_inflation;
@@ -113,29 +117,14 @@ export function investFixedDeposit(
   const values_after_inflation = values_after_taxes.map((projection) => {
     return {
       year: projection.year,
-      value: adjustForInflation(projection.value, inflationRate, nbYears),
+      value: adjustForInflation(
+        projection.value,
+        inflationRate,
+        projection.year,
+      ),
     };
   });
   return values_after_inflation;
-}
-
-// Compute the future values of an investment with growing annual deposits.
-function futureValuesGrowingCompounding(
-  capital: number,
-  roi: number,
-  nbYears: number,
-  annualDeposits: number[],
-): Projection[] {
-  const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
-  return timeHorizons.map((year) => ({
-    year,
-    value: futureValueFixedCompounding(
-      capital,
-      roi,
-      year,
-      annualDeposits[year],
-    ),
-  }));
 }
 
 // Compute the future values of an investment with growing annual deposits and taxes.
@@ -156,15 +145,18 @@ export function investGrowingDeposit(
   const annualDeposits = timeHorizons.map((year) =>
     Math.floor(yearlySalaries[year] * investingRate),
   );
-  const values_before_taxes = futureValuesGrowingCompounding(
-    capital,
-    roi,
-    nbYears,
-    annualDeposits,
-  );
-  const deposits = [capital + annualDeposits[0]];
+
+  // End-of-year deposits: annualDeposits[y - 1] at end of year y (aligned with fixed scenario).
+  const values_before_taxes: Projection[] = [{ year: 0, value: capital }];
+  let wealth = capital;
   for (let y = 1; y <= nbYears; y++) {
-    deposits.push(deposits[y - 1] + annualDeposits[y]);
+    wealth = wealth * (1 + roi) + annualDeposits[y - 1];
+    values_before_taxes.push({ year: y, value: wealth });
+  }
+
+  const deposits: number[] = [capital];
+  for (let y = 1; y <= nbYears; y++) {
+    deposits.push(deposits[y - 1] + annualDeposits[y - 1]);
   }
   const gains = values_before_taxes.map((v, idx) => v.value - deposits[idx]);
   const taxes = gains.map((gain) => getTaxOnGain(gain, taxRate));
@@ -177,7 +169,11 @@ export function investGrowingDeposit(
   const values_after_inflation = values_after_taxes.map((projection) => {
     return {
       year: projection.year,
-      value: adjustForInflation(projection.value, inflationRate, nbYears),
+      value: adjustForInflation(
+        projection.value,
+        inflationRate,
+        projection.year,
+      ),
     };
   });
   return values_after_inflation;

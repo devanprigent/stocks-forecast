@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { ScenariosBox } from "./ScenariosBox";
-import { ParametersBox } from "./ParametersBox";
-import { Chart } from "./Chart";
+import { ScenariosBox } from "./components/ScenariosBox";
+import { ParametersBox } from "./components/ParametersBox";
+import { Chart } from "./components/Chart";
 import {
   investUniqueDeposit as scenario1,
   investFixedDeposit as scenario2,

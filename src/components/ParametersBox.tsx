@@ -1,4 +1,4 @@
-import { Parameters } from "./types";
+import { Parameters } from "../types";
 
 interface PropsType {
   callback: (params: Parameters) => void;

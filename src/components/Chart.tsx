@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import type { ChartOptions } from "chart.js";
 import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
-import { Dataset } from "./types";
+import { Dataset } from "../types";
 
 ChartJS.register(
   CategoryScale,

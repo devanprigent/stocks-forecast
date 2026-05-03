@@ -36,12 +36,14 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 
 ```
 src/
-  App.tsx           # State, scenario toggles, FIRE goal wiring
-  Chart.tsx         # Chart.js line chart + optional goal annotation
-  ParametersBox.tsx # Numeric inputs
-  ScenariosBox.tsx  # Scenario checkboxes
-  utils.ts          # Compounding, tax, inflation projections
-  types.ts          # Shared TypeScript types
+  App.tsx
+  components/
+    Chart.tsx         # Chart.js line chart + optional goal annotation
+    InfoIcon.tsx      # Tooltip helper for scenario hints
+    ParametersBox.tsx # Numeric inputs
+    ScenariosBox.tsx  # Scenario checkboxes
+  utils.ts            # Compounding, tax, inflation projections
+  types.ts            # Shared TypeScript types
 ```
 
 ## Roadmap / ideas
