@@ -1,5 +1,5 @@
 import {
-  PerformanceType,
+  InputType,
   ProjectionResult,
 } from "../../schemas/performanceSchema.js";
 import { STATUSES } from "../../utils/constants.js";
@@ -29,35 +29,59 @@ class Utils {
 }
 
 export class ComputePerformance {
-  private params: PerformanceType;
+  private input: InputType;
   private result: ProjectionResult[] = [];
   private status: STATUSES = STATUSES.CREATED;
   private yearAxis: number[] = [];
 
-  public constructor(params: PerformanceType) {
-    this.params = params;
-    this.yearAxis = Array.from({ length: params.years + 1 }, (_, i) => i);
+  public constructor(input: InputType) {
+    this.input = input;
+    this.yearAxis = Array.from({ length: input.years + 1 }, (_, i) => i);
   }
 
   public compute() {
+    console.log("[ComputePerformance] start", {
+      capital: this.input.capital,
+      roi: this.input.roi,
+      years: this.input.years,
+      types: this.input.types,
+      options: this.input.options,
+    });
+
     this.computeNoInvestment();
-    if (this.params.types.fixed_deposit) {
+
+    if (this.input.types.fixed_deposit) {
+      console.log("[ComputePerformance] running fixed_deposit");
       this.computeUniqueDeposit();
     }
-    if (this.params.types.fixed_contributions) {
+    if (this.input.types.fixed_contributions) {
+      console.log("[ComputePerformance] running fixed_contributions");
       this.computeFixedDeposit();
     }
-    if (this.params.types.growing_contributions) {
+
+    if (this.input.types.growing_contributions) {
+      console.log("[ComputePerformance] running growing_contributions");
       this.computeGrowingDeposit();
     }
+
+    if (this.input.options?.tax_rate != null) {
+      console.log("[ComputePerformance] running tax", {
+        tax_rate: this.input.options.tax_rate,
+      });
+      this.computeTax();
+    }
     this.status = STATUSES.DONE;
+    console.log("[ComputePerformance] done", {
+      scenarios: this.result.length,
+      types: this.result.map((r) => r.type),
+    });
   }
 
   private computeNoInvestment() {
     const contributions = [];
     const gains = [];
-    for (let i = 0; i < this.params.years; i++) {
-      contributions.push(this.params.capital);
+    for (let i = 0; i < this.input.years; i++) {
+      contributions.push(this.input.capital);
       gains.push(0);
     }
 
@@ -74,13 +98,13 @@ export class ComputePerformance {
 
   private computeUniqueDeposit() {
     const contributions = [];
-    for (let i = 0; i < this.params.years; i++) {
-      contributions.push(this.params.capital);
+    for (let i = 0; i < this.input.years; i++) {
+      contributions.push(this.input.capital);
     }
 
     const gains = Utils.getGains(
-      this.params.capital,
-      this.params.roi,
+      this.input.capital,
+      this.input.roi,
       this.yearAxis,
     );
 
@@ -102,9 +126,20 @@ export class ComputePerformance {
 
   private computeGrowingDeposit() {}
 
-  private applyInflation() {}
+  private computeTax() {
+    const taxRate = this.input.options?.tax_rate as number;
 
-  private applyTax() {}
+    this.result.forEach((scenario) => {
+      const gains = scenario.gains;
+      const taxes = gains.map((gain) => Utils.getTax(gain, taxRate));
+      scenario.taxes = taxes;
+      scenario.total = scenario.total.map((value, i) => value - taxes[i]);
+    });
+  }
+
+  private computeInflation() {
+    console.log("[ComputePerformance] inflation: not implemented yet");
+  }
 
   public getResult() {
     if (this.status !== STATUSES.DONE) {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const performanceSchema = z
+export const inputSchema = z
   .object({
     roi: z.number(),
     years: z.number(),
@@ -22,8 +22,8 @@ export const performanceSchema = z
 
     options: z
       .object({
-        inflation: z.number().optional(),
-        tax: z.number().optional(),
+        inflation_rate: z.number().optional(),
+        tax_rate: z.number().optional(),
       })
       .optional(),
   })
@@ -62,7 +62,7 @@ export const performanceSchema = z
     }
   });
 
-export type PerformanceType = z.infer<typeof performanceSchema>;
+export type InputType = z.infer<typeof inputSchema>;
 
 export type ProjectionType =
   | "no_investment"
