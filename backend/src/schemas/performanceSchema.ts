@@ -64,19 +64,18 @@ export const performanceSchema = z
 
 export type PerformanceType = z.infer<typeof performanceSchema>;
 
-export type Projection = {
-  year: number;
-  value: number;
-};
-
 export type ProjectionType =
+  | "no_investment"
   | "fixed_deposit"
   | "fixed_contributions"
   | "growing_contributions";
 
 export type ProjectionResult = {
   type: ProjectionType;
-  raw: Projection[];
-  after_taxes?: Projection[];
-  after_inflation?: Projection[];
+  yearAxis: number[];
+  contributions: number[];
+  gains: number[];
+  taxes?: number[];
+  total: number[];
+  total_inflation_adjusted?: number[];
 };

@@ -1,13 +1,20 @@
 import {
   PerformanceType,
-  Projection,
   ProjectionResult,
 } from "../../schemas/performanceSchema.js";
 import { STATUSES } from "../../utils/constants.js";
 
 class Utils {
+  static getGain(capital: number, roi: number, nbYears: number): number {
+    return capital * (Math.pow(1 + roi, nbYears) - 1);
+  }
+
+  static getGains(capital: number, roi: number, yearAxis: number[]): number[] {
+    return yearAxis.map((year) => this.getGain(capital, roi, year));
+  }
+
   // Compute the tax on the gain of an investment:
-  static getTaxOnGain(gain: number, taxRate: number): number {
+  static getTax(gain: number, taxRate: number): number {
     return gain * taxRate;
   }
 
@@ -19,36 +26,21 @@ class Utils {
   ): number {
     return futureValue / Math.pow(1 + inflationRate, elapsedYears);
   }
-
-  // Compute the future value of an investment with a unique initial deposit.
-  static futureValue(capital: number, roi: number, nbYears: number): number {
-    return capital * Math.pow(1 + roi, nbYears);
-  }
-
-  // Compute the future values of an investment with a unique initial deposit.
-  static futureValues(
-    capital: number,
-    roi: number,
-    nbYears: number,
-  ): Projection[] {
-    const timeHorizons = Array.from({ length: nbYears + 1 }, (_, i) => i);
-    return timeHorizons.map((year) => ({
-      year,
-      value: this.futureValue(capital, roi, year),
-    }));
-  }
 }
 
 export class ComputePerformance {
   private params: PerformanceType;
   private result: ProjectionResult[] = [];
   private status: STATUSES = STATUSES.CREATED;
+  private yearAxis: number[] = [];
 
   public constructor(params: PerformanceType) {
     this.params = params;
+    this.yearAxis = Array.from({ length: params.years + 1 }, (_, i) => i);
   }
 
   public compute() {
+    this.computeNoInvestment();
     if (this.params.types.fixed_deposit) {
       this.computeUniqueDeposit();
     }
@@ -61,17 +53,49 @@ export class ComputePerformance {
     this.status = STATUSES.DONE;
   }
 
-  private computeUniqueDeposit() {
-    const projections = Utils.futureValues(
-      this.params.capital,
-      this.params.roi,
-      this.params.years,
-    );
+  private computeNoInvestment() {
+    const contributions = [];
+    const gains = [];
+    for (let i = 0; i < this.params.years; i++) {
+      contributions.push(this.params.capital);
+      gains.push(0);
+    }
+
     const newResult: ProjectionResult = {
       type: "fixed_deposit",
-      raw: projections,
+      yearAxis: this.yearAxis,
+      contributions: contributions,
+      gains: gains,
+      total: contributions,
     };
-    return newResult;
+
+    this.result.push(newResult);
+  }
+
+  private computeUniqueDeposit() {
+    const contributions = [];
+    for (let i = 0; i < this.params.years; i++) {
+      contributions.push(this.params.capital);
+    }
+
+    const gains = Utils.getGains(
+      this.params.capital,
+      this.params.roi,
+      this.yearAxis,
+    );
+
+    const total = contributions.map(
+      (contribution, index) => contribution + gains[index],
+    );
+
+    const newResult: ProjectionResult = {
+      type: "fixed_deposit",
+      yearAxis: this.yearAxis,
+      contributions,
+      gains,
+      total,
+    };
+    this.result.push(newResult);
   }
 
   private computeFixedDeposit() {}
