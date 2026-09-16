@@ -20,11 +20,11 @@ class Utils {
 
   // Express a nominal future value in today's money: discount by elapsed years.
   static adjustForInflation(
-    futureValue: number,
+    value: number,
     inflationRate: number,
     elapsedYears: number,
   ): number {
-    return futureValue / Math.pow(1 + inflationRate, elapsedYears);
+    return value / Math.pow(1 + inflationRate, elapsedYears);
   }
 }
 
@@ -70,6 +70,14 @@ export class ComputePerformance {
       });
       this.computeTax();
     }
+
+    if (this.input.options?.inflation_rate != null) {
+      console.log("[ComputePerformance] running inflation", {
+        inflation_rate: this.input.options.inflation_rate,
+      });
+      this.computeInflation();
+    }
+
     this.status = STATUSES.DONE;
     console.log("[ComputePerformance] done", {
       scenarios: this.result.length,
@@ -138,7 +146,13 @@ export class ComputePerformance {
   }
 
   private computeInflation() {
-    console.log("[ComputePerformance] inflation: not implemented yet");
+    const inflationRate = this.input.options?.inflation_rate as number;
+
+    this.result.forEach((scenario) => {
+      scenario.total_inflation_adjusted = scenario.total.map((value, i) =>
+        Utils.adjustForInflation(value, inflationRate, this.yearAxis[i]),
+      );
+    });
   }
 
   public getResult() {

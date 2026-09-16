@@ -1,6 +1,6 @@
 # Stocks Forecast
 
-A small **React** web app that projects long-term portfolio value under several contribution assumptions. It plots **after-tax, inflation-adjusted** wealth over time (today’s euros) and can overlay a **FIRE-style target** based on the 25× annual spending rule.
+A small **React and Express** web app that projects long-term portfolio value under several contribution assumptions. It plots **after-tax, inflation-adjusted** wealth over time (today’s euros) and can overlay a **FIRE-style target** based on the 25× annual spending rule.
 
 ## Features
 
