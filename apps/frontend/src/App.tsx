@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { ScenariosBox } from "./components/ScenariosBox";
-import { ParametersBox } from "./components/ParametersBox";
-import { Chart } from "./components/Chart";
+import { ScenariosBox } from "./features/ScenariosBox";
+import { ParametersBox } from "./features/ParametersBox";
+import { Chart } from "./features/Chart";
 import {
   investUniqueDeposit as scenario1,
   investFixedDeposit as scenario2,
   investGrowingDeposit as scenario3,
-} from "./utils";
-import { Parameters, Dataset } from "./types";
+} from "./utils/utils";
+import { Parameters, Dataset } from "./types/types";
 
 const initial = {
   label: "",

@@ -1,4 +1,4 @@
-import { Projection } from "./types";
+import { Projection } from "../types/types";
 
 // Compute the tax on the gain of an investment:
 function getTaxOnGain(gain: number, taxRate: number): number {
