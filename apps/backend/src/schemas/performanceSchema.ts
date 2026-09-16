@@ -16,7 +16,7 @@ export const inputSchema = z
       .object({
         monthly_net_salary: z.number().optional(),
         investing_rate: z.number().optional(),
-        salary_increase: z.number().optional(),
+        yearly_salary_increase: z.number().optional(),
       })
       .optional(),
 
@@ -52,11 +52,11 @@ export const inputSchema = z
     }
     if (
       data.types.growing_contributions &&
-      data.params?.salary_increase == null
+      data.params?.yearly_salary_increase == null
     ) {
       ctx.addIssue({
         code: "custom",
-        path: ["params", "salary_increase"],
+        path: ["params", "yearly_salary_increase"],
         message: "Required when growing_contributions is true",
       });
     }

@@ -36,7 +36,7 @@ class Utils {
     yearAxis: number[],
     annualDeposit: number,
   ): number[] {
-    return yearAxis.map((year) =>
+    return yearAxis.map((year, i) =>
       this.getGainWithDeposit(capital, roi, year, annualDeposit),
     );
   }
@@ -68,13 +68,7 @@ export class ComputePerformance {
   }
 
   public compute() {
-    console.log("[ComputePerformance] start", {
-      capital: this.input.capital,
-      roi: this.input.roi,
-      years: this.input.years,
-      types: this.input.types,
-      options: this.input.options,
-    });
+    console.log("[ComputePerformance] start", this.input);
 
     this.computeNoInvestment();
 
@@ -89,7 +83,7 @@ export class ComputePerformance {
 
     if (this.input.types.growing_contributions) {
       console.log("[ComputePerformance] running growing_contributions");
-      this.computeGrowingDeposit();
+      this.computeGrowingContributions();
     }
 
     if (this.input.options?.tax_rate != null) {
@@ -189,7 +183,47 @@ export class ComputePerformance {
     this.result.push(newResult);
   }
 
-  private computeGrowingDeposit() {}
+  private computeGrowingContributions() {
+    const monthlySalary = this.input.params?.monthly_net_salary as number;
+    const annualSalary = monthlySalary * 12;
+    const salaryIncreaseRate = this.input.params
+      ?.yearly_salary_increase as number;
+    const annualSalaryIncreases = Utils.getGains(
+      annualSalary,
+      salaryIncreaseRate,
+      this.yearAxis,
+    );
+
+    const investingRate = this.input.params?.investing_rate as number;
+    const annualDeposits = annualSalaryIncreases.map(
+      (increase) => (annualSalary + increase) * investingRate,
+    );
+
+    const contributions = [this.input.capital];
+    for (let i = 1; i <= this.input.years; i++) {
+      contributions.push(contributions[i - 1] + annualDeposits[i - 1]);
+    }
+
+    const gains: number[] = [0];
+    let wealth = this.input.capital;
+    for (let y = 1; y <= this.input.years; y++) {
+      wealth = wealth * (1 + this.input.roi) + annualDeposits[y - 1];
+      gains.push(wealth - contributions[y]);
+    }
+
+    const total = contributions.map(
+      (contribution, index) => contribution + gains[index],
+    );
+
+    const newResult: ProjectionResult = {
+      type: "growing_contributions",
+      yearAxis: this.yearAxis,
+      contributions,
+      gains,
+      total,
+    };
+    this.result.push(newResult);
+  }
 
   private computeTax() {
     const taxRate = this.input.options?.tax_rate as number;

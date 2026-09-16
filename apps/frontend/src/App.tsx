@@ -16,7 +16,7 @@ const initial = {
   capital: 10000,
   inflationRate: 2,
   taxRate: 20,
-  investingRate: 30,
+  investingRate: 40,
   salary: 2400,
   salaryIncreaseRate: 3,
   datasets: Array.from({ length: 20 }, (_, i) => ({

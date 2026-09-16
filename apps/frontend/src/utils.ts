@@ -142,8 +142,8 @@ export function investGrowingDeposit(
   const yearlySalaries = timeHorizons.map(
     (year) => initialSalary * 12 * Math.pow(1 + salaryIncreaseRate, year),
   );
-  const annualDeposits = timeHorizons.map((year) =>
-    Math.floor(yearlySalaries[year] * investingRate),
+  const annualDeposits = timeHorizons.map(
+    (year) => yearlySalaries[year] * investingRate,
   );
 
   // End-of-year deposits: annualDeposits[y - 1] at end of year y (aligned with fixed scenario).
