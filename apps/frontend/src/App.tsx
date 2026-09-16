@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { ScenariosBox } from "./features/ScenariosBox";
 import { ParametersBox } from "./features/ParametersBox";
-import { Chart } from "./features/Chart";
+
 import {
   investUniqueDeposit as scenario1,
   investFixedDeposit as scenario2,
   investGrowingDeposit as scenario3,
 } from "./utils/utils";
 import { Parameters, Dataset } from "./types/types";
+import { OutputBox } from "./features/OutputBox";
+
+import { Header } from "./core/Header";
 
 const initial = {
   label: "",
@@ -144,17 +147,7 @@ function App() {
   return (
     <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1400px]">
-        <header className="mb-8 flex flex-col gap-2 border-b border-slate-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Stocks forecast
-            </h1>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">
-              After-tax, inflation-adjusted projections. Toggle scenarios and
-              tune assumptions.
-            </p>
-          </div>
-        </header>
+        <Header />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
           <aside className="flex w-full shrink-0 flex-col gap-5 lg:sticky lg:top-6 lg:w-[min(100%,380px)]">
@@ -178,24 +171,11 @@ function App() {
             />
           </aside>
 
-          <main className="min-h-[min(70vh,560px)] min-w-0 flex-1 rounded-xl border border-slate-200/90 bg-white/95 p-4 shadow-md shadow-slate-300/30 backdrop-blur-sm sm:p-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <div>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-teal-700/90">
-                  Output
-                </h2>
-                <p className="text-base font-semibold text-slate-900">
-                  Real wealth over time
-                </p>
-              </div>
-              <p className="text-xs text-slate-500">
-                Values in today&apos;s euros after tax & inflation
-              </p>
-            </div>
-            <div className="h-[min(60vh,480px)] min-h-[320px] w-full">
-              <Chart datasets={datasets} line={fireGoal} showGoal={showGoal} />
-            </div>
-          </main>
+          <OutputBox
+            datasets={datasets}
+            fireGoal={fireGoal}
+            showGoal={showGoal}
+          />
         </div>
       </div>
     </div>
