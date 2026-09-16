@@ -13,6 +13,34 @@ class Utils {
     return yearAxis.map((year) => this.getGain(capital, roi, year));
   }
 
+  // Compute the future value of an investment with an annual deposit
+  static getGainWithDeposit(
+    capital: number,
+    roi: number,
+    nbYears: number,
+    annualDeposit: number,
+  ): number {
+    if (roi === 0) {
+      return capital + annualDeposit * nbYears;
+    }
+
+    const gainInitial = this.getGain(capital, roi, nbYears);
+    const gainDeposit =
+      this.getGain(annualDeposit, roi, nbYears) / roi - annualDeposit * nbYears;
+    return gainInitial + gainDeposit;
+  }
+
+  static getGainsWithDeposit(
+    capital: number,
+    roi: number,
+    yearAxis: number[],
+    annualDeposit: number,
+  ): number[] {
+    return yearAxis.map((year) =>
+      this.getGainWithDeposit(capital, roi, year, annualDeposit),
+    );
+  }
+
   // Compute the tax on the gain of an investment:
   static getTax(gain: number, taxRate: number): number {
     return gain * taxRate;
@@ -22,9 +50,9 @@ class Utils {
   static adjustForInflation(
     value: number,
     inflationRate: number,
-    elapsedYears: number,
+    nbYears: number,
   ): number {
-    return value / Math.pow(1 + inflationRate, elapsedYears);
+    return value / Math.pow(1 + inflationRate, nbYears);
   }
 }
 
@@ -52,11 +80,11 @@ export class ComputePerformance {
 
     if (this.input.types.fixed_deposit) {
       console.log("[ComputePerformance] running fixed_deposit");
-      this.computeUniqueDeposit();
+      this.computeFixedDeposit();
     }
     if (this.input.types.fixed_contributions) {
       console.log("[ComputePerformance] running fixed_contributions");
-      this.computeFixedDeposit();
+      this.computeFixedContributions();
     }
 
     if (this.input.types.growing_contributions) {
@@ -88,13 +116,13 @@ export class ComputePerformance {
   private computeNoInvestment() {
     const contributions = [];
     const gains = [];
-    for (let i = 0; i < this.input.years; i++) {
+    for (let i = 0; i <= this.input.years; i++) {
       contributions.push(this.input.capital);
       gains.push(0);
     }
 
     const newResult: ProjectionResult = {
-      type: "fixed_deposit",
+      type: "no_investment",
       yearAxis: this.yearAxis,
       contributions: contributions,
       gains: gains,
@@ -104,9 +132,9 @@ export class ComputePerformance {
     this.result.push(newResult);
   }
 
-  private computeUniqueDeposit() {
+  private computeFixedDeposit() {
     const contributions = [];
-    for (let i = 0; i < this.input.years; i++) {
+    for (let i = 0; i <= this.input.years; i++) {
       contributions.push(this.input.capital);
     }
 
@@ -130,7 +158,36 @@ export class ComputePerformance {
     this.result.push(newResult);
   }
 
-  private computeFixedDeposit() {}
+  private computeFixedContributions() {
+    const monthlySalary = this.input.params?.monthly_net_salary as number;
+    const investingRate = this.input.params?.investing_rate as number;
+    const annualDeposit = monthlySalary * investingRate * 12;
+
+    const contributions = [];
+    for (let i = 0; i <= this.input.years; i++) {
+      contributions.push(this.input.capital + annualDeposit * this.yearAxis[i]);
+    }
+
+    const gains = Utils.getGainsWithDeposit(
+      this.input.capital,
+      this.input.roi,
+      this.yearAxis,
+      annualDeposit,
+    );
+
+    const total = contributions.map(
+      (contribution, index) => contribution + gains[index],
+    );
+
+    const newResult: ProjectionResult = {
+      type: "fixed_contributions",
+      yearAxis: this.yearAxis,
+      contributions,
+      gains,
+      total,
+    };
+    this.result.push(newResult);
+  }
 
   private computeGrowingDeposit() {}
 
