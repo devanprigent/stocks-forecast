@@ -32,6 +32,24 @@ export function ScenariosBox({ input, callback }: Readonly<PropsType>) {
         <label className={rowClass}>
           <input
             type="checkbox"
+            name="no_investment"
+            checked={input.types.no_investment}
+            onChange={(e) =>
+              callback({
+                types: { no_investment: Boolean(e.target.checked) },
+              })
+            }
+            className={checkboxClass}
+          />
+          <span className="flex flex-1 flex-wrap items-center gap-1.5 text-sm font-medium leading-snug text-slate-800">
+            No investment
+            <InfoIcon tooltip="If I don't invest my money, how much will it be worth in 10, 15, or 20 years?" />
+          </span>
+        </label>
+
+        <label className={rowClass}>
+          <input
+            type="checkbox"
             name="fixed_deposit"
             checked={input.types.fixed_deposit}
             onChange={(e) =>

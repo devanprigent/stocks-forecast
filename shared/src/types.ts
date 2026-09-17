@@ -8,6 +8,7 @@ export const inputSchema = z
     capital: z.number(),
 
     types: z.object({
+      no_investment: z.boolean(),
       fixed_deposit: z.boolean(),
       fixed_contributions: z.boolean(),
       growing_contributions: z.boolean(),

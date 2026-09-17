@@ -14,6 +14,7 @@ const initial: InputType = {
   capital: 10000,
 
   types: {
+    no_investment: true,
     fixed_deposit: false,
     fixed_contributions: false,
     growing_contributions: false,

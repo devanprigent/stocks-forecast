@@ -71,7 +71,12 @@ export class ComputePerformance {
   public compute() {
     console.log("[ComputePerformance] start", this.input);
 
-    this.computeNoInvestment();
+    const isScenario = Object.values(this.input.types).some((value) => value);
+
+    if (this.input.types.no_investment) {
+      console.log("[ComputePerformance] running no_investment");
+      this.computeNoInvestment();
+    }
 
     if (this.input.types.fixed_deposit) {
       console.log("[ComputePerformance] running fixed_deposit");
@@ -87,14 +92,14 @@ export class ComputePerformance {
       this.computeGrowingContributions();
     }
 
-    if (this.input.options?.tax_rate != null) {
+    if (isScenario && this.input.options?.tax_rate != null) {
       console.log("[ComputePerformance] running tax", {
         tax_rate: this.input.options.tax_rate,
       });
       this.computeTax();
     }
 
-    if (this.input.options?.inflation_rate != null) {
+    if (isScenario && this.input.options?.inflation_rate != null) {
       console.log("[ComputePerformance] running inflation", {
         inflation_rate: this.input.options.inflation_rate,
       });
