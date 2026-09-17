@@ -1,0 +1,5 @@
+{
+    "name": "stocks-forecast",
+    "private": true,
+    "workspaces": ["apps/*", "shared"]
+}

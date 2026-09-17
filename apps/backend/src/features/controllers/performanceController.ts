@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { inputSchema } from "../../schemas/performanceSchema.js";
+import { inputSchema } from "@stocks-forecast/shared";
 import { ComputePerformance } from "../services/computePerformance.js";
 
 export function performanceController(req: Request, res: Response) {

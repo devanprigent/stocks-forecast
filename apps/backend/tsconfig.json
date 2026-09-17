@@ -1,15 +1,16 @@
 {
-    "compilerOptions": {
-      "target": "ES2022",
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "outDir": "dist",
-      "rootDir": "src",
-      "strict": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "declaration": true,
-      "sourceMap": true
-    },
-    "include": ["src/**/*"]
-  }
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "paths": {
+      "@stocks-forecast/shared": ["../../shared/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}
