@@ -1,7 +1,8 @@
 import {
   InputType,
-  ProjectionResult,
-} from "../../schemas/performanceSchema.js";
+  ProjectionUnit,
+  PROJECTION_TYPES,
+} from "@stocks-forecast/shared";
 import { STATUSES } from "../../utils/constants.js";
 
 class Utils {
@@ -58,7 +59,7 @@ class Utils {
 
 export class ComputePerformance {
   private input: InputType;
-  private result: ProjectionResult[] = [];
+  private result: ProjectionUnit[] = [];
   private status: STATUSES = STATUSES.CREATED;
   private yearAxis: number[] = [];
 
@@ -115,9 +116,10 @@ export class ComputePerformance {
       gains.push(0);
     }
 
-    const newResult: ProjectionResult = {
-      type: "no_investment",
-      yearAxis: this.yearAxis,
+    const newResult: ProjectionUnit = {
+      type: PROJECTION_TYPES.NO_INVESTMENT,
+      label: "No Investment",
+      year_axis: this.yearAxis,
       contributions: contributions,
       gains: gains,
       total: contributions,
@@ -142,9 +144,10 @@ export class ComputePerformance {
       (contribution, index) => contribution + gains[index],
     );
 
-    const newResult: ProjectionResult = {
-      type: "fixed_deposit",
-      yearAxis: this.yearAxis,
+    const newResult: ProjectionUnit = {
+      type: PROJECTION_TYPES.FIXED_DEPOSIT,
+      label: "Fixed Deposit",
+      year_axis: this.yearAxis,
       contributions,
       gains,
       total,
@@ -173,9 +176,10 @@ export class ComputePerformance {
       (contribution, index) => contribution + gains[index],
     );
 
-    const newResult: ProjectionResult = {
-      type: "fixed_contributions",
-      yearAxis: this.yearAxis,
+    const newResult: ProjectionUnit = {
+      type: PROJECTION_TYPES.FIXED_CONTRIBUTION,
+      label: "Fixed Annual Contribution",
+      year_axis: this.yearAxis,
       contributions,
       gains,
       total,
@@ -215,9 +219,10 @@ export class ComputePerformance {
       (contribution, index) => contribution + gains[index],
     );
 
-    const newResult: ProjectionResult = {
-      type: "growing_contributions",
-      yearAxis: this.yearAxis,
+    const newResult: ProjectionUnit = {
+      type: PROJECTION_TYPES.GROWING_CONTRIBUTION,
+      label: "Growing Annual Contribution",
+      year_axis: this.yearAxis,
       contributions,
       gains,
       total,

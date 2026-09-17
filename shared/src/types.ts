@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PROJECTION_TYPES } from "./constants";
 
 export const inputSchema = z
   .object({
@@ -64,18 +65,27 @@ export const inputSchema = z
 
 export type InputType = z.infer<typeof inputSchema>;
 
-export type ProjectionType =
-  | "no_investment"
-  | "fixed_deposit"
-  | "fixed_contributions"
-  | "growing_contributions";
+const ProjectionTypeSchema = z.enum([
+  PROJECTION_TYPES.NO_INVESTMENT,
+  PROJECTION_TYPES.FIXED_DEPOSIT,
+  PROJECTION_TYPES.FIXED_CONTRIBUTION,
+  PROJECTION_TYPES.GROWING_CONTRIBUTION,
+]);
 
-export type ProjectionResult = {
-  type: ProjectionType;
-  yearAxis: number[];
-  contributions: number[];
-  gains: number[];
-  taxes?: number[];
-  total: number[];
-  total_inflation_adjusted?: number[];
-};
+export type ProjectionType = z.infer<typeof ProjectionTypeSchema>;
+
+export const ProjectionUnitSchema = z.object({
+  type: ProjectionTypeSchema,
+  label: z.string(),
+  year_axis: z.array(z.number()),
+  contributions: z.array(z.number()),
+  gains: z.array(z.number()),
+  taxes: z.array(z.number()).optional(),
+  total: z.array(z.number()),
+  total_inflation_adjusted: z.array(z.number()).optional(),
+});
+
+export const ProjectionResultSchema = z.array(ProjectionUnitSchema);
+
+export type ProjectionUnit = z.infer<typeof ProjectionUnitSchema>;
+export type ProjectionResult = z.infer<typeof ProjectionResultSchema>;

@@ -1,2 +1,8 @@
-export { inputSchema } from "./types";
-export type { InputType, ProjectionType, ProjectionResult } from "./types";
+export { inputSchema, ProjectionResultSchema } from "./types";
+export type {
+  InputType,
+  ProjectionType,
+  ProjectionResult,
+  ProjectionUnit,
+} from "./types";
+export { ENDPOINTS, PROJECTION_TYPES } from "./constants";
