@@ -1,4 +1,4 @@
-import { use } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -13,8 +13,9 @@ import {
 } from "chart.js";
 import type { ChartOptions } from "chart.js";
 import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
-import { ProjectionResult } from "@stocks-forecast/shared";
+import { InputType } from "@stocks-forecast/shared";
 import { ChartFallback } from "./ChartFallback";
+import { getDatasets } from "../../api/client";
 
 ChartJS.register(
   CategoryScale,
@@ -35,17 +36,16 @@ const SERIES_COLORS = [
 ];
 
 interface PropsType {
-  datasetsPromise: Promise<ProjectionResult>;
+  input: InputType;
   line: number;
   showGoal: boolean;
 }
 
-export function Chart({
-  datasetsPromise,
-  line,
-  showGoal,
-}: Readonly<PropsType>) {
-  const datasets = use(datasetsPromise);
+export function Chart({ input, line, showGoal }: Readonly<PropsType>) {
+  const { data: datasets } = useSuspenseQuery({
+    queryKey: ["forecast", input],
+    queryFn: () => getDatasets(input),
+  });
   const datasetCount = datasets.length;
 
   if (datasetCount === 0) {

@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { Chart } from "./chart/Chart";
 import { InputType } from "@stocks-forecast/shared";
-import { getDatasets } from "../api/client";
-import { ErrorBoundary } from "./chart/ErrorBoundary";
+import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 import { Loading } from "../core/Loading";
 
 interface PropsType {
@@ -29,15 +28,16 @@ export function OutputBox({ input, fireGoal, showGoal }: Readonly<PropsType>) {
       </div>
       <div className="h-[min(60vh,480px)] min-h-[320px] w-full">
         <ErrorBoundary
-          key={JSON.stringify(input)}
-          fallback={<div>We couldn’t load this section.</div>}
+          fallbackRender={({ error }) => (
+            <div>
+              <p>Something went wrong:</p>
+              <pre>{getErrorMessage(error)}</pre>
+            </div>
+          )}
+          resetKeys={[input]}
         >
           <Suspense fallback={<Loading width={100} height={100} />}>
-            <Chart
-              datasetsPromise={getDatasets(input)}
-              line={fireGoal}
-              showGoal={showGoal}
-            />
+            <Chart input={input} line={fireGoal} showGoal={showGoal} />
           </Suspense>
         </ErrorBoundary>
       </div>
