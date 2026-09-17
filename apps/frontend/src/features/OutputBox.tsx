@@ -3,6 +3,7 @@ import { Chart } from "./chart/Chart";
 import { InputType } from "@stocks-forecast/shared";
 import { getDatasets } from "../api/client";
 import { ErrorBoundary } from "./chart/ErrorBoundary";
+import { Loading } from "../core/Loading";
 
 interface PropsType {
   input: InputType;
@@ -31,7 +32,7 @@ export function OutputBox({ input, fireGoal, showGoal }: Readonly<PropsType>) {
           key={JSON.stringify(input)}
           fallback={<div>We couldn’t load this section.</div>}
         >
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<Loading width={100} height={100} />}>
             <Chart
               datasetsPromise={getDatasets(input)}
               line={fireGoal}

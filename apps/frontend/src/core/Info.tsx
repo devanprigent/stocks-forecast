@@ -4,7 +4,7 @@ interface Propstype {
   tooltip: string;
 }
 
-export function InfoIcon({ tooltip }: Readonly<Propstype>) {
+export function Info({ tooltip }: Readonly<Propstype>) {
   return (
     <Tooltip
       title={tooltip}

@@ -1,4 +1,4 @@
-import { InfoIcon } from "./InfoIcon";
+import { Info } from "../core/Info";
 import { InputPatch } from "src/types/types";
 import { InputType } from "@stocks-forecast/shared";
 
@@ -43,7 +43,7 @@ export function ScenariosBox({ input, callback }: Readonly<PropsType>) {
           />
           <span className="flex flex-1 flex-wrap items-center gap-1.5 text-sm font-medium leading-snug text-slate-800">
             No investment
-            <InfoIcon tooltip="If I don't invest my money, how much will it be worth in 10, 15, or 20 years?" />
+            <Info tooltip="If I don't invest my money, how much will it be worth in 10, 15, or 20 years?" />
           </span>
         </label>
 
@@ -61,7 +61,7 @@ export function ScenariosBox({ input, callback }: Readonly<PropsType>) {
           />
           <span className="flex flex-1 flex-wrap items-center gap-1.5 text-sm font-medium leading-snug text-slate-800">
             Lump sum (no new contributions)
-            <InfoIcon tooltip="If I stop adding money but keep my current portfolio, how much will it be worth in 10, 15, or 20 years?" />
+            <Info tooltip="If I stop adding money but keep my current portfolio, how much will it be worth in 10, 15, or 20 years?" />
           </span>
         </label>
 
@@ -79,7 +79,7 @@ export function ScenariosBox({ input, callback }: Readonly<PropsType>) {
           />
           <span className="flex flex-1 flex-wrap items-center gap-1.5 text-sm font-medium leading-snug text-slate-800">
             Fixed annual contributions
-            <InfoIcon tooltip="If I keep investing the same amount every year for 10, 15, or 20 years, how much will I have?" />
+            <Info tooltip="If I keep investing the same amount every year for 10, 15, or 20 years, how much will I have?" />
           </span>
         </label>
 
@@ -97,7 +97,7 @@ export function ScenariosBox({ input, callback }: Readonly<PropsType>) {
           />
           <span className="flex flex-1 flex-wrap items-center gap-1.5 text-sm font-medium leading-snug text-slate-800">
             Growing contributions (salary raises)
-            <InfoIcon tooltip="If I keep investing and factor in future salary increases, how much will I have?" />
+            <Info tooltip="If I keep investing and factor in future salary increases, how much will I have?" />
           </span>
         </label>
       </div>
