@@ -1,147 +1,56 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ScenariosBox } from "./features/ScenariosBox";
 import { ParametersBox } from "./features/ParametersBox";
 
-import {
-  investUniqueDeposit as scenario1,
-  investFixedDeposit as scenario2,
-  investGrowingDeposit as scenario3,
-} from "./utils/utils";
-import { Parameters, Dataset } from "./types/types";
 import { OutputBox } from "./features/OutputBox";
-
+import { InputType } from "@stocks-forecast/shared";
 import { Header } from "./core/Header";
+import { getFIREGoal } from "./utils/utils";
+import { InputPatch } from "./types/types";
 
-const initial = {
-  label: "",
+const initial: InputType = {
+  roi: 0.1,
   years: 20,
-  roi: 10,
   capital: 10000,
-  inflationRate: 2,
-  taxRate: 20,
-  investingRate: 40,
-  salary: 2400,
-  salaryIncreaseRate: 3,
-  datasets: Array.from({ length: 20 }, (_, i) => ({
-    year: i + 1,
-    value: 0,
-  })),
+
+  types: {
+    fixed_deposit: false,
+    fixed_contributions: false,
+    growing_contributions: false,
+  },
+
+  params: {
+    monthly_net_salary: 2400,
+    investing_rate: 0.4,
+    yearly_salary_increase: 0.03,
+  },
+
+  options: {
+    inflation_rate: 0.02,
+    tax_rate: 0.2,
+  },
 };
 
 function App() {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [years, setYears] = useState<number>(initial.years);
-  const [roi, setRoi] = useState<number>(initial.roi);
-  const [capital, setCapital] = useState<number>(initial.capital);
-  const [inflationRate, setInflation] = useState<number>(initial.inflationRate);
-  const [salary, setSalary] = useState<number>(initial.salary);
-  const [investingRate, setInvestingRate] = useState<number>(
-    initial.investingRate,
-  );
-  const [salaryIncreaseRate, setSalaryIncreaseRate] = useState<number>(
-    initial.salaryIncreaseRate,
-  );
-  const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({
-    option1: false,
-    option2: false,
-    option3: false,
-    option4: false,
-  });
+  const [input, setInput] = useState<InputType>(initial);
   const [showGoal, setShowGoal] = useState<boolean>(false);
-  const annualDeposit = salary * (1 - investingRate / 100) * 12;
-  const fireGoal = 25 * annualDeposit;
+  const fireGoal = getFIREGoal(
+    input.params?.monthly_net_salary,
+    input.params?.investing_rate,
+  );
 
-  useEffect(() => {
-    function displayChart() {
-      setDatasets([]);
-      if (checkboxes.option1) {
-        const res = scenario1(
-          capital,
-          roi / 100,
-          years,
-          initial.taxRate / 100,
-          inflationRate / 100,
-        );
-        const newDataset: Dataset = {
-          id: 1,
-          label: "Lump sum (no new contributions)",
-          data: res,
-        };
-        setDatasets((prev) => [...prev, newDataset]);
-      } else if (!checkboxes.option1) {
-        setDatasets((prev) => [...prev.filter((dataset) => dataset.id !== 1)]);
-      }
-      if (checkboxes.option2) {
-        const annualDeposit = salary * (investingRate / 100) * 12;
-        const res = scenario2(
-          capital,
-          roi / 100,
-          years,
-          initial.taxRate / 100,
-          inflationRate / 100,
-          annualDeposit,
-        );
-        const newDataset: Dataset = {
-          id: 2,
-          label: "Fixed annual contributions",
-          data: res,
-        };
-        setDatasets((prev) => [...prev, newDataset]);
-      } else if (!checkboxes.option2) {
-        setDatasets((prev) => [...prev.filter((dataset) => dataset.id !== 2)]);
-      }
-      if (checkboxes.option3) {
-        const res = scenario3(
-          capital,
-          roi / 100,
-          years,
-          initial.taxRate / 100,
-          inflationRate / 100,
-          salary,
-          salaryIncreaseRate / 100,
-          investingRate / 100,
-        );
-        const newDataset: Dataset = {
-          id: 3,
-          label: "Growing contributions (salary raises)",
-          data: res,
-        };
-        setDatasets((prev) => [...prev, newDataset]);
-      } else if (!checkboxes.option3) {
-        setDatasets((prev) => [...prev.filter((dataset) => dataset.id !== 3)]);
-      }
-    }
-
-    displayChart();
-  }, [
-    years,
-    capital,
-    roi,
-    checkboxes,
-    inflationRate,
-    salary,
-    investingRate,
-    salaryIncreaseRate,
-  ]);
-
-  function setParameters({
-    years,
-    roi,
-    capital,
-    inflationRate,
-    showGoal,
-    salary,
-    investingRate,
-    salaryIncreaseRate,
-  }: Parameters) {
-    setYears(years);
-    setRoi(roi);
-    setCapital(capital);
-    setInflation(inflationRate);
-    setShowGoal(showGoal);
-    setSalary(salary);
-    setInvestingRate(investingRate);
-    setSalaryIncreaseRate(salaryIncreaseRate);
+  function onChange(patch: InputPatch) {
+    setInput({
+      ...input,
+      ...patch,
+      types: patch.types ? { ...input.types, ...patch.types } : input.types,
+      params: patch.params
+        ? { ...input.params, ...patch.params }
+        : input.params,
+      options: patch.options
+        ? { ...input.options, ...patch.options }
+        : input.options,
+    });
   }
 
   return (
@@ -151,31 +60,21 @@ function App() {
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
           <aside className="flex w-full shrink-0 flex-col gap-5 lg:sticky lg:top-6 lg:w-[min(100%,380px)]">
-            <ScenariosBox
-              callback={(newCheckboxes: { [key: string]: boolean }) => {
-                setCheckboxes(newCheckboxes);
-              }}
-            />
+            <ScenariosBox input={input} callback={onChange} />
             <ParametersBox
-              callback={setParameters}
-              years={years}
-              roi={roi}
-              capital={capital}
-              inflationRate={inflationRate}
-              salary={salary}
-              investingRate={investingRate}
-              salaryIncreaseRate={salaryIncreaseRate}
-              showSalary={checkboxes.option2 || checkboxes.option3}
-              showIncreaseRate={checkboxes.option3}
+              input={input}
+              callback={onChange}
+              showSalary={
+                input.types.fixed_contributions ||
+                input.types.growing_contributions
+              }
+              showIncreaseRate={input.types.growing_contributions}
               showGoal={showGoal}
+              setShowGoal={setShowGoal}
             />
           </aside>
 
-          <OutputBox
-            datasets={datasets}
-            fireGoal={fireGoal}
-            showGoal={showGoal}
-          />
+          <OutputBox input={input} fireGoal={fireGoal} showGoal={showGoal} />
         </div>
       </div>
     </div>

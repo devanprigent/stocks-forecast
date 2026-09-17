@@ -6,6 +6,6 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ) {
-  console.error("Error detected", err);
+  console.trace(err);
   res.status(500).json("Internal Server Error");
 }

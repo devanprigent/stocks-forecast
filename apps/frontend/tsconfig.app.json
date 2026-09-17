@@ -6,9 +6,9 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "baseUrl": "./",
     "paths": {
-      "@stocks-forecast/shared": ["../../shared/src/index.ts"]
+      "@stocks-forecast/shared": ["../../shared/src/index.ts"],
+      "src/*": ["./src/*"]
     },
 
     /* Bundler mode */

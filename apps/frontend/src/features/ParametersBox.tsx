@@ -1,17 +1,13 @@
-import { Parameters } from "../types";
+import { InputType } from "@stocks-forecast/shared";
+import { InputPatch } from "src/types/types";
 
 interface PropsType {
-  callback: (params: Parameters) => void;
-  years: number;
-  roi: number;
-  capital: number;
-  inflationRate: number;
-  salary: number;
-  investingRate: number;
-  salaryIncreaseRate: number;
+  callback: (input: InputPatch) => void;
+  input: InputType;
   showIncreaseRate: boolean;
   showSalary: boolean;
   showGoal: boolean;
+  setShowGoal: (value: boolean) => void;
 }
 
 const fieldStyle =
@@ -23,21 +19,12 @@ const rowClass = "flex items-center justify-between gap-4 py-1";
 
 export function ParametersBox({
   callback,
-  years,
-  roi,
-  capital,
-  inflationRate,
-  salary,
-  investingRate,
-  salaryIncreaseRate,
+  input,
   showIncreaseRate,
   showSalary,
   showGoal,
+  setShowGoal,
 }: PropsType) {
-  function onChange(params: Parameters) {
-    callback(params);
-  }
-
   return (
     <section className="flex flex-col gap-1 rounded-xl border border-slate-200/90 bg-white/90 p-5 shadow-sm shadow-slate-200/50 backdrop-blur-sm">
       <div className="mb-2">
@@ -55,20 +42,8 @@ export function ParametersBox({
           <input
             type="number"
             min="0"
-            value={years}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange({
-                years: value,
-                roi,
-                capital,
-                inflationRate,
-                showGoal,
-                salary,
-                investingRate,
-                salaryIncreaseRate,
-              });
-            }}
+            value={input.years}
+            onChange={(e) => callback({ years: Number(e.target.value) })}
             className={fieldStyle}
           />
         </label>
@@ -77,20 +52,8 @@ export function ParametersBox({
           <span className={labelClass}>ROI (%)</span>
           <input
             type="number"
-            value={roi}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange({
-                years,
-                roi: value,
-                capital,
-                inflationRate,
-                showGoal,
-                salary,
-                investingRate,
-                salaryIncreaseRate,
-              });
-            }}
+            value={input.roi}
+            onChange={(e) => callback({ roi: Number(e.target.value) })}
             className={fieldStyle}
           />
         </label>
@@ -101,20 +64,8 @@ export function ParametersBox({
             type="number"
             step="100"
             min="0"
-            value={capital}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange({
-                years,
-                roi,
-                capital: value,
-                inflationRate,
-                showGoal,
-                salary,
-                investingRate,
-                salaryIncreaseRate,
-              });
-            }}
+            value={input.capital}
+            onChange={(e) => callback({ capital: Number(e.target.value) })}
             className={fieldStyle}
           />
         </label>
@@ -124,20 +75,10 @@ export function ParametersBox({
           <input
             type="number"
             step="0.1"
-            value={inflationRate}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange({
-                years,
-                roi,
-                capital,
-                inflationRate: value,
-                showGoal,
-                salary,
-                investingRate,
-                salaryIncreaseRate,
-              });
-            }}
+            value={input.options?.inflation_rate}
+            onChange={(e) =>
+              callback({ options: { inflation_rate: Number(e.target.value) } })
+            }
             className={fieldStyle}
           />
         </label>
@@ -147,19 +88,7 @@ export function ParametersBox({
           <input
             type="checkbox"
             checked={showGoal}
-            onChange={(e) => {
-              const checked = e.target.checked;
-              onChange({
-                years,
-                roi,
-                capital,
-                inflationRate,
-                showGoal: checked,
-                salary,
-                investingRate,
-                salaryIncreaseRate,
-              });
-            }}
+            onChange={(e) => setShowGoal(e.target.checked)}
             className="size-4 rounded border-slate-300 text-teal-600 focus:ring-2 focus:ring-teal-500/30 focus:ring-offset-0"
           />
         </label>
@@ -176,20 +105,12 @@ export function ParametersBox({
               type="number"
               min="0"
               step="100"
-              value={salary}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                onChange({
-                  years,
-                  roi,
-                  capital,
-                  inflationRate,
-                  showGoal,
-                  salary: value,
-                  investingRate,
-                  salaryIncreaseRate,
-                });
-              }}
+              value={input.params?.monthly_net_salary}
+              onChange={(e) =>
+                callback({
+                  params: { monthly_net_salary: Number(e.target.value) },
+                })
+              }
               className={fieldStyle}
             />
           </label>
@@ -198,43 +119,29 @@ export function ParametersBox({
             <span className={labelClass}>Investing rate (%)</span>
             <input
               type="number"
-              value={investingRate}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                onChange({
-                  years,
-                  roi,
-                  capital,
-                  inflationRate,
-                  showGoal,
-                  salary,
-                  investingRate: value,
-                  salaryIncreaseRate,
-                });
-              }}
+              value={input.params?.investing_rate}
+              onChange={(e) =>
+                callback({
+                  params: { investing_rate: Number(e.target.value) },
+                })
+              }
               className={fieldStyle}
             />
           </label>
 
           {showIncreaseRate && (
-            <label className={`${rowClass} mt-1 border-t border-slate-100 pt-3`}>
+            <label
+              className={`${rowClass} mt-1 border-t border-slate-100 pt-3`}
+            >
               <span className={labelClass}>Salary increase (% / year)</span>
               <input
                 type="number"
-                value={salaryIncreaseRate}
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  onChange({
-                    years,
-                    roi,
-                    capital,
-                    inflationRate,
-                    showGoal,
-                    salary,
-                    investingRate,
-                    salaryIncreaseRate: value,
-                  });
-                }}
+                value={input.params?.yearly_salary_increase}
+                onChange={(e) =>
+                  callback({
+                    params: { yearly_salary_increase: Number(e.target.value) },
+                  })
+                }
                 className={fieldStyle}
               />
             </label>

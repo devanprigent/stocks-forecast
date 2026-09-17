@@ -1,3 +1,5 @@
+import { InputType } from "@stocks-forecast/shared";
+
 export interface Projection {
   year: number;
   value: number;
@@ -9,13 +11,8 @@ export interface Dataset {
   data: Projection[];
 }
 
-export interface Parameters {
-  years: number;
-  roi: number;
-  capital: number;
-  inflationRate: number;
-  showGoal: boolean;
-  salary: number;
-  investingRate: number;
-  salaryIncreaseRate: number;
-}
+export type InputPatch = {
+  [K in keyof InputType]?: NonNullable<InputType[K]> extends object
+    ? Partial<NonNullable<InputType[K]>>
+    : InputType[K];
+};
